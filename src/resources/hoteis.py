@@ -4,5 +4,6 @@ from utils.constants import hoteis
 
 
 class Hoteis(Resource):
-    def get(self):
-        return {'hoteis': hoteis}
+    @staticmethod
+    def get():
+        return {'hoteis': [hotel.json() for hotel in HotelModel.find_all()]}
