@@ -1,5 +1,5 @@
 python3 -m venv venv
-source venv/bin/activate
-./venv/bin/pip install -e .
+venv/Scripts/Activate.ps1
+pip install -e .
 pip install --upgrade pip
 pip install -r requirements.txt
