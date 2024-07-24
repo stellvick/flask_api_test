@@ -1,5 +1,6 @@
-from flask_restful import Resource, reqparse
-from models.hotel_model import HotelModel
+from werkzeug.exceptions import UnsupportedMediaType
+from flask_restful import Resource, reqparse, request
+from flask import jsonify
 from utils.search import normalize_hotel_path_params
 
 import sqlite3
@@ -16,8 +17,9 @@ class Hoteis(Resource):
         self.path_params.add_argument('limit', type=int)
         self.path_params.add_argument('offset', type=int)
 
-    def get(self):
-        dados = self.path_params.parse_args()
+    @staticmethod
+    def get():
+        dados = request.args
         dados_validos = {chave: dados[chave] for chave in dados if dados[chave] is not None}
         params = normalize_hotel_path_params(**dados_validos)
         connection = sqlite3.connect('banco.db')
@@ -31,12 +33,15 @@ class Hoteis(Resource):
         tupla = tuple([params[chave] for chave in params])
         resultado = cursor.execute(consulta, tupla)
         hoteis = []
+        if not resultado:
+            return {'message': 'Nenhum hotel encontrado'}, 404
         for linha in resultado:
-            hoteis.append({
+            new_hotel = jsonify({
                 'hotel_id': linha[0],
                 'nome': linha[1],
                 'estrelas': linha[2],
                 'diaria': linha[3],
                 'cidade': linha[4]
             })
+            hoteis.append(new_hotel)
         return {'hoteis': hoteis}, 200

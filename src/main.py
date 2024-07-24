@@ -1,3 +1,5 @@
+import sentry_sdk
+from sentry_sdk.integrations.flask import FlaskIntegration
 from flask import Flask, jsonify
 from flask_restful import Api
 from BLACKLIST import BLACKLIST
@@ -8,6 +10,15 @@ from resources.user_logout import UserLogout
 from resources.user_register import UserRegister
 from resources.usuario import Usuario
 from flask_jwt_extended import JWTManager
+
+sentry_sdk.init(
+    dsn="https://042e6987e11572304d823b60c6cc3d0a@o4507656610447360.ingest.us.sentry.io/4507656613199872",
+    traces_sample_rate=1.0,
+    profiles_sample_rate=1.0,
+    integrations=[FlaskIntegration(
+        transaction_style="url"
+    )]
+)
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///banco.db'
