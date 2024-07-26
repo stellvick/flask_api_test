@@ -1,7 +1,8 @@
-from werkzeug.exceptions import UnsupportedMediaType
+from os.path import abspath
+
 from flask_restful import Resource, reqparse, request
-from flask import jsonify
-from utils.search import normalize_hotel_path_params
+from models.hotel_model import HotelModel
+from utils.search import normalize_hotel_path_params, search_hotel_query
 
 import sqlite3
 
@@ -22,26 +23,16 @@ class Hoteis(Resource):
         dados = request.args
         dados_validos = {chave: dados[chave] for chave in dados if dados[chave] is not None}
         params = normalize_hotel_path_params(**dados_validos)
-        connection = sqlite3.connect('banco.db')
+        db_path = abspath('instance/banco.db')
+        connection = sqlite3.connect(db_path)
         cursor = connection.cursor()
-        if not params.get('cidade'):
-            consulta = "SELECT * FROM hoteis WHERE (estrelas >= ? and estrelas <= ?) " \
-                       "and (diaria >= ? and diaria <= ?) LIMIT ? OFFSET ?"
-        else:
-            consulta = "SELECT * FROM hoteis WHERE (estrelas >= ? and estrelas <= ?) " \
-                       "and (diaria >= ? and diaria <= ?) and cidade = ? LIMIT ? OFFSET ?"
+        consulta = search_hotel_query(params)
         tupla = tuple([params[chave] for chave in params])
         resultado = cursor.execute(consulta, tupla)
         hoteis = []
         if not resultado:
             return {'message': 'Nenhum hotel encontrado'}, 404
         for linha in resultado:
-            new_hotel = jsonify({
-                'hotel_id': linha[0],
-                'nome': linha[1],
-                'estrelas': linha[2],
-                'diaria': linha[3],
-                'cidade': linha[4]
-            })
+            new_hotel = HotelModel(*linha).json()
             hoteis.append(new_hotel)
         return {'hoteis': hoteis}, 200

@@ -9,13 +9,15 @@ class HotelModel(db.Model):
     estrelas = db.Column(db.Float(precision=1))
     diaria = db.Column(db.Float(precision=2))
     cidade = db.Column(db.String(40))
+    site_id = db.Column(db.Integer, db.ForeignKey('sites.site_id'))
 
-    def __init__(self, hotel_id: str, nome: str, estrelas: float, diaria: float, cidade: str):
+    def __init__(self, hotel_id: str, nome: str, estrelas: float, diaria: float, cidade: str, site_id: int):
         self.hotel_id = hotel_id  # type: str
         self.nome = nome  # type: str
         self.estrelas = estrelas  # type: float
         self.diaria = diaria  # type: float
         self.cidade = cidade  # type: str
+        self.site_id = site_id  # type: int
 
     def json(self):
         return {
@@ -23,7 +25,8 @@ class HotelModel(db.Model):
             'nome': self.nome,
             'estrelas': self.estrelas,
             'diaria': self.diaria,
-            'cidade': self.cidade
+            'cidade': self.cidade,
+            'site_id': self.site_id
         }
 
     @classmethod
