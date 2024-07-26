@@ -1,6 +1,7 @@
 from flask_restful import Resource, reqparse
 from flask_jwt_extended import jwt_required
 from models.hotel_model import HotelModel
+from models.site_model import SiteModel
 
 
 class Hotel(Resource):
@@ -10,6 +11,7 @@ class Hotel(Resource):
         self.args.add_argument('estrelas', type=float, required=True, help="Estrelas field cannot be left blank.")
         self.args.add_argument('diaria', type=float, required=True, help="Diaria field cannot be left blank.")
         self.args.add_argument('cidade', type=str, required=True, help="Cidade field cannot be left blank.")
+        self.args.add_argument('site_id', type=int, required=True, help="Site id field cannot be left blank.")
 
     @staticmethod
     def get(hotel_id: str):
@@ -24,6 +26,8 @@ class Hotel(Resource):
             return {'message': f'Hotel id {hotel_id} already exists.'}, 400
         data = self.args.parse_args()
         new_hotel = HotelModel(hotel_id, **data)
+        if not SiteModel.find_by_id(data.get('site_id')):
+            return {'message': f'Site id {data.get("site_id")} not found.'}, 400
         try:
             new_hotel.save_hotel()
         except (Exception, ValueError):
@@ -41,6 +45,8 @@ class Hotel(Resource):
             return {"hoteis": [hotel.json()]}, 200
         data = self.args.parse_args()
         new_hotel = HotelModel(hotel_id, **data)
+        if not SiteModel.find_by_id(data.get('site_id')):
+            return {'message': f'Site id {data.get("site_id")} not found.'}, 400
         try:
             new_hotel.save_hotel()
         except (Exception, ValueError):
