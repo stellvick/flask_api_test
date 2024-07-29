@@ -23,9 +23,11 @@ class UserLogin(Resource):
         data = parser.parse_args()
         user = UserModel.find_by_username(data['login'])
         if user and safe_str_cmp(user.senha, data['senha']):
-            token = create_access_token(identity=user.user_id)
-            return {
-                "message": "Logged in successfully.",
-                "token": token
-            }, 200
+            if user.active:
+                token = create_access_token(identity=user.user_id)
+                return {
+                    "message": "Logged in successfully.",
+                    "token": token
+                }, 200
+            return {"message": "User not active."}, 400
         return {"message": "Invalid credentials."}, 401

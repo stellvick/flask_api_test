@@ -35,3 +35,9 @@ hoteis = [
         "cidade": "São Paulo"
     }
 ]
+
+MAIL_URL = "https://api.mailgun.net/v3/sandboxe6cf8cbec6114f77948341ccee0e0144.mailgun.org/messages"
+MAIL_KEY = "1e49bad6a5a75dc9c4660f2e4ff19c45-afce6020-69a5d3d3"
+MAIL_FROM = "Excited User <mailgun@sandboxe6cf8cbec6114f77948341ccee0e0144.mailgun.org>"
+MAIL_USER = "postmaster@sandboxe6cf8cbec6114f77948341ccee0e0144.mailgun.org"
+MAIL_PASSWORD = "047d72ac7c7dcbdc36a63bb22626962b-afce6020-6b81e43c"
